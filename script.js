@@ -97,6 +97,25 @@ charactersBox.prototype.createBox = function(type = "light", x, y, width, height
 	this.setpoint([x+width,y+height], this.characters[type][4])
 }
 
+charactersBox.prototype.getPointData = function(point = [0,0]) {
+	let result = {}
+	if (point[0] < 0 || point[0] > c.width || point[1] < 0 || point[1] > c.height) return false
+	let x = Math.floor(point[0])
+	let y = Math.floor(point[1])
+
+	let char = c.text[j + (i * c.width)]
+	if (char) result += c.text[j + (i * c.width)]
+	else result += " "
+	let down = ""
+	let left = ""
+	let right = ""
+	if (i > 0) up = c.text[j + ((i-1) * c.width)]
+	if (i < c.height - 1) down = c.text[j + ((i+1) * c.width)]
+	if (j > 0) left = c.text[(j-1) + (i * c.width)]
+	if (j < c.width - 1) right = c.text[(j+1) + (i * c.width)]
+	let around = ["", "", "", ""]
+}
+
 charactersBox.prototype.getResult = function() {
 	let result = ""
 	for (let i = 0; i < c.height; i++) {
@@ -112,7 +131,7 @@ charactersBox.prototype.getResult = function() {
 			if (i < c.height - 1) down = c.text[j + ((i+1) * c.width)]
 			if (j > 0) left = c.text[(j-1) + (i * c.width)]
 			if (j < c.width - 1) right = c.text[(j+1) + (i * c.width)]
-			let a = ["", "", "", ""]
+			let around = ["", "", "", ""]
 		}
 		result += "\n"
 	}
