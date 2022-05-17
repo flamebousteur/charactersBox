@@ -44,6 +44,7 @@ var charactersBox = function(width = 10, height = 10) {
 	}
 	this.boxs = {}
 	this.text = Array(width * height);
+	this.texts = []
 }
 
 charactersBox.prototype.setpoint = function (point = [0,0], char = "X") {
@@ -97,53 +98,306 @@ charactersBox.prototype.createBox = function(type = "light", x, y, width, height
 	this.setpoint([x+width,y+height], this.characters[type][4])
 }
 
+charactersBox.prototype.getCharType = function (char) {
+	let result = {}
+	if (this.characters.bold.includes(char)) result.type = "bold"
+	if (this.characters.light.includes(char)) result.type = "light"
+	if (this.characters.double.includes(char)) result.type = "double"
+	if (result.type) result.mode = this.characters[result.type].indexOf(char)
+	return result
+}
+
 charactersBox.prototype.getPointData = function(point = [0,0]) {
 	let result = {}
 	if (point[0] < 0 || point[0] > c.width || point[1] < 0 || point[1] > c.height) return false
 	let x = Math.floor(point[0])
 	let y = Math.floor(point[1])
 
-	let char = c.text[j + (i * c.width)]
-	if (char) result += c.text[j + (i * c.width)]
-	else result += " "
-	let down = ""
-	let left = ""
-	let right = ""
-	if (i > 0) up = c.text[j + ((i-1) * c.width)]
-	if (i < c.height - 1) down = c.text[j + ((i+1) * c.width)]
-	if (j > 0) left = c.text[(j-1) + (i * c.width)]
-	if (j < c.width - 1) right = c.text[(j+1) + (i * c.width)]
-	let around = ["", "", "", ""]
-}
-
-charactersBox.prototype.getResult = function() {
-	let result = ""
-	for (let i = 0; i < c.height; i++) {
-		for (let j = 0; j < c.width; j++) {
-			let char = c.text[j + (i * c.width)]
-			if (char) result += c.text[j + (i * c.width)]
-			else result += " "
-			let up = ""
-			let down = ""
-			let left = ""
-			let right = ""
-			if (i > 0) up = c.text[j + ((i-1) * c.width)]
-			if (i < c.height - 1) down = c.text[j + ((i+1) * c.width)]
-			if (j > 0) left = c.text[(j-1) + (i * c.width)]
-			if (j < c.width - 1) right = c.text[(j+1) + (i * c.width)]
-			let around = ["", "", "", ""]
+	result.char = c.text[x + (y * c.width)]
+	result.this = c.getCharType(result.char)
+	result.up = ""
+	result.down = ""
+	result.left = ""
+	result.right = ""
+	if (y > 0) result.up = c.text[x + ((y-1) * c.width)]
+	if (y < c.height - 1) result.down = c.text[x + ((y+1) * c.width)]
+	if (x > 0) result.left = c.text[(x-1) + (y * c.width)]
+	if (x < c.width - 1) result.right = c.text[(x+1) + (y * c.width)]
+	result.around = [{}, {}, {}, {}]
+	result.around[0] = this.getCharType(result.up)
+	result.around[1] = this.getCharType(result.down)
+	result.around[2] = this.getCharType(result.left)
+	result.around[3] = this.getCharType(result.right)
+	result.type = this.getCharType(result.char)
+	result.connect = [false, false, false, false]
+	if (result.around[0].mode != undefined){
+		switch (result.around[0].mode) {
+			case 0:
+				result.connect[0] = false
+				break;
+			case 1:
+				result.connect[0] = true
+				break;
+			case 2:
+				result.connect[0] = true
+				break;
+			case 3:
+				result.connect[0] = true
+				break;
+			case 4:
+				result.connect[0] = false
+				break;
+			case 5:
+				result.connect[0] = false
+				break;
+			case 6:
+				result.connect[0] = true
+				break;
+			case 7:
+				result.connect[0] = false
+				break;
+			case 8:
+				result.connect[0] = true
+				break;
+			case 9:
+				result.connect[0] = true
+				break;
+			case 10:
+				result.connect[0] = true
+				break;
+			default:
+				result.connect[0] = false
+				break;
 		}
-		result += "\n"
+	}
+	if (result.around[1].mode != undefined){
+		switch (result.around[1].mode) {
+			case 0:
+				result.connect[1] = false
+				break;
+			case 1:
+				result.connect[1] = true
+				break;
+			case 2:
+				result.connect[1] = false
+				break;
+			case 3:
+				result.connect[1] = false
+				break;
+			case 4:
+				result.connect[1] = true
+				break;
+			case 5:
+				result.connect[1] = true
+				break;
+			case 6:
+				result.connect[1] = false
+				break;
+			case 7:
+				result.connect[1] = true
+				break;
+			case 8:
+				result.connect[1] = true
+				break;
+			case 9:
+				result.connect[1] = true
+				break;
+			case 10:
+				result.connect[1] = true
+				break;
+			default:
+				result.connect[1] = false
+				break;
+		}
+	}
+	if (result.around[2].mode != undefined){
+		switch (result.around[2].mode) {
+			case 0:
+				result.connect[2] = true
+				break;
+			case 1:
+				result.connect[2] = false
+				break;
+			case 2:
+				result.connect[2] = true
+				break;
+			case 3:
+				result.connect[2] = false
+				break;
+			case 4:
+				result.connect[2] = false
+				break;
+			case 5:
+				result.connect[2] = true
+				break;
+			case 6:
+				result.connect[2] = true
+				break;
+			case 7:
+				result.connect[2] = true
+				break;
+			case 8:
+				result.connect[2] = true
+				break;
+			case 9:
+				result.connect[2] = false
+				break;
+			case 10:
+				result.connect[2] = true
+				break;
+			default:
+				result.connect[2] = false
+				break;
+		}
+	}
+	if (result.around[3].mode != undefined){
+		switch (result.around[3].mode) {
+			case 0:
+				result.connect[3] = true
+				break;
+			case 1:
+				result.connect[3] = false
+				break;
+			case 2:
+				result.connect[3] = false
+				break;
+			case 3:
+				result.connect[3] = true
+				break;
+			case 4:
+				result.connect[3] = true
+				break;
+			case 5:
+				result.connect[3] = false
+				break;
+			case 6:
+				result.connect[3] = true
+				break;
+			case 7:
+				result.connect[3] = true
+				break;
+			case 8:
+				result.connect[3] = false
+				break;
+			case 9:
+				result.connect[3] = true
+				break;
+			case 10:
+				result.connect[3] = true
+				break;
+			default:
+				result.connect[3] = false
+				break;
+		}
 	}
 	return result
 }
 
-export { charactersBox }
+charactersBox.prototype.smooth = function (point = [0,0]) {
+	let result = " "
+	let x = Math.floor(point[0])
+	let y = Math.floor(point[1])
+	let data = this.getPointData([x,y])
+	let mode = data.this.type
+	// connect the textures
+	// around = {up, down, left, right}
+	/*
+0	"━",
+1	"┃",
+2	"┏",
+3	"┓",
+4	"┛",
+5	"┗",
+6	"┳",
+7	"┷",
+8	"┣",
+9	"┫",
+10	"╋",
+	*/
+	if      (data.connect[0] == false && data.connect[1] == false && data.connect[2] == true  && data.connect[3] == true ) result = this.characters[mode][0]
+	else if (data.connect[0] == true  && data.connect[1] == true  && data.connect[2] == false && data.connect[3] == false) result = this.characters[mode][1]
+	else if (data.connect[0] == false && data.connect[1] == true  && data.connect[2] == false && data.connect[3] == true ) result = this.characters[mode][2]
+	else if (data.connect[0] == false && data.connect[1] == true  && data.connect[2] == true  && data.connect[3] == false) result = this.characters[mode][3]
+	else if (data.connect[0] == true  && data.connect[1] == false && data.connect[2] == true  && data.connect[3] == false) result = this.characters[mode][4]
+	else if (data.connect[0] == true  && data.connect[1] == false && data.connect[2] == false && data.connect[3] == true ) result = this.characters[mode][5]
+	else if (data.connect[0] == false && data.connect[1] == true  && data.connect[2] == true  && data.connect[3] == true ) result = this.characters[mode][6]
+	else if (data.connect[0] == true  && data.connect[1] == false && data.connect[2] == true  && data.connect[3] == true ) result = this.characters[mode][7]
+	else if (data.connect[0] == true  && data.connect[1] == true  && data.connect[2] == false && data.connect[3] == true ) result = this.characters[mode][8]
+	else if (data.connect[0] == true  && data.connect[1] == true  && data.connect[2] == true  && data.connect[3] == false) result = this.characters[mode][9]
+	else if (data.connect[0] == true  && data.connect[1] == true  && data.connect[2] == true  && data.connect[3] == true ) result = this.characters[mode][10]
+	else result = data.char
+	return result
+}
 
-/* demo
+charactersBox.prototype.setChar = function (point = [0,0], char = " ") {
+	if (char.length) return false
+	let x = Math.floor(point[0])
+	let y = Math.floor(point[1])
+	this.text[x + y * this.width] = char
+}
+
+charactersBox.prototype.setString = function (point = [0,0], string = " ", maxWidth = 1) {
+	let x = Math.floor(point[0])
+	let y = Math.floor(point[1])
+	let w = 0
+	for (let i = 0; i < string.length; i++) {
+		this.setChar([x + w, y], string[i])
+		w++
+		if (w >= maxWidth) {
+			w = 0
+			y++
+		}
+	}
+}
+
+charactersBox.prototype.stringPos = function (point = [0,0], string = " ", maxWidth = 1) {
+	let result = []
+	let x = Math.floor(point[0])
+	let y = Math.floor(point[1])
+	let w = 0
+	for (let i = 0; i < string.length; i++) {
+		result.push([[x + w, y], string[i]])
+		w++
+		if (w >= maxWidth) {
+			w = 0
+			y++
+		}
+	}
+	return result
+}
+
+charactersBox.prototype.addString = function (point = [0,0], string = " ", maxWidth = null) {
+	if (maxWidth == null) maxWidth = string.length
+	this.texts.push([point, string, maxWidth])
+}
+
+charactersBox.prototype.getResult = function() {
+	let result = []
+	for (let i = 0; i < c.height; i++) {
+		for (let j = 0; j < c.width; j++) {
+			let char = c.text[j + (i * c.width)]
+			if (char) result.push(this.smooth([j,i]))
+			else result.push(" ")
+		}
+		result.push("\n")
+	}
+	for (let i = 0; i < this.texts.length; i++) {
+		let t = this.stringPos(this.texts[i][0], this.texts[i][1], this.texts[i][2])
+		for (let j = 0; j < t.length; j++) {
+			console.log("addchar "+t[j][1]+" at "+ (t[j][0][0] + t[j][0][1] * c.width))
+			result[t[j][0][0] + t[j][0][1] * c.width] = t[j][1]
+		}
+	}
+	return result.join("")
+}
+
+//export { charactersBox }
+
+// /* demo
 let c = new charactersBox(15, 15)
 c.createBox("light", 2, 2, 5, 5)
 c.createBox("bold", 0, 0, 3, 3)
 c.createBox("double", 6, 6, 3, 3)
+c.addString([0,0], "Hello",3)
 console.log(c.getResult())
-*/
+// */
