@@ -42,6 +42,38 @@ var charactersBox = function(width = 10, height = 10) {
 			"╬",
 		],
 	}
+	this.connectionChars = {
+		double:{
+			orison:[
+				"╒",
+				"╕",
+				"╘",
+				"╛",
+				"╟",
+				"╢",
+				"╤",
+				"╧",
+				"╪",
+			],
+			vertical:[
+				"╓",
+				"╖",
+				"╙",
+				"╜",
+				"╞",
+				"╡",
+				"╥",
+				"╨",
+				"╪",
+			]
+		},
+		/* light:{
+		// complete later
+			orison:[
+				"┑",
+			]
+		}*/
+	}
 	this.boxs = {}
 	this.text = Array(width * height);
 	this.texts = []
